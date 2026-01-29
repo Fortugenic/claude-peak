@@ -38,6 +38,9 @@ final class AppSettings: ObservableObject {
     @Published var pollingInterval: PollingInterval {
         didSet { UserDefaults.standard.set(pollingInterval.rawValue, forKey: "pollingInterval") }
     }
+    @Published var showFlameIcon: Bool {
+        didSet { UserDefaults.standard.set(showFlameIcon, forKey: "showFlameIcon") }
+    }
 
     private init() {
         if let raw = UserDefaults.standard.string(forKey: "menuBarDisplay"),
@@ -52,6 +55,12 @@ final class AppSettings: ObservableObject {
             self.pollingInterval = value
         } else {
             self.pollingInterval = .five
+        }
+
+        if UserDefaults.standard.object(forKey: "showFlameIcon") != nil {
+            self.showFlameIcon = UserDefaults.standard.bool(forKey: "showFlameIcon")
+        } else {
+            self.showFlameIcon = true
         }
     }
 }

@@ -58,6 +58,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }.store(in: &cancellables)
 
+        settings.$showFlameIcon.sink { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.updateMenuBar()
+                self?.updateAnimationSpeed()
+            }
+        }.store(in: &cancellables)
+
         service.startPolling()
         activity.start()
     }
@@ -130,18 +137,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateMenuBar() {
         guard let button = statusItem.button else { return }
 
-        let tps = activity.tokensPerSecond
-        let count = flameCount(for: tps)
+        if settings.showFlameIcon {
+            let tps = activity.tokensPerSecond
+            let count = flameCount(for: tps)
 
-        if count > 0 {
-            button.image = createFlameImage(count: count, frame: frameIndex)
+            if count > 0 {
+                button.image = createFlameImage(count: count, frame: frameIndex)
+            } else {
+                // Tiny static ember
+                let config = NSImage.SymbolConfiguration(pointSize: 12, weight: .light)
+                let image = NSImage(systemSymbolName: "flame", accessibilityDescription: "usage")?
+                    .withSymbolConfiguration(config)
+                image?.isTemplate = true
+                button.image = image
+            }
         } else {
-            // Tiny static ember
-            let config = NSImage.SymbolConfiguration(pointSize: 12, weight: .light)
-            let image = NSImage(systemSymbolName: "flame", accessibilityDescription: "usage")?
-                .withSymbolConfiguration(config)
-            image?.isTemplate = true
-            button.image = image
+            button.image = nil
         }
 
         guard let usage = service.usage else {
@@ -162,6 +173,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateAnimationSpeed() {
         animationTimer?.invalidate()
         animationTimer = nil
+
+        guard settings.showFlameIcon else { return }
 
         let tps = activity.tokensPerSecond
 

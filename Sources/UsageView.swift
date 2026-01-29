@@ -87,6 +87,15 @@ struct UsageView: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 6) {
+                Text("FLAME ICON")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+                Toggle("Show flame icon", isOn: $settings.showFlameIcon)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+            }
+
             if !service.needsLogin {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("ACCOUNT")
