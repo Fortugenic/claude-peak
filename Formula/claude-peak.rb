@@ -18,14 +18,14 @@ class ClaudePeak < Formula
     (app_bundle/"Contents/Resources").mkpath
     cp buildpath/".build/release/ClaudePeak", app_bundle/"Contents/MacOS/ClaudePeak"
     cp buildpath/"Resources/Info.plist", app_bundle/"Contents/Info.plist"
-  end
 
-  def post_install
-    target = File.expand_path("~/Applications/Claude Peak.app")
-    if File.exist?(target) || File.symlink?(target)
-      FileUtils.rm_rf(target)
-    end
-    FileUtils.ln_sf("#{prefix}/Claude Peak.app", target)
+    # Link to ~/Applications
+    apps_dir = Pathname.new(Dir.home)/"Applications"
+    apps_dir.mkpath
+    target = apps_dir/"#{app_name}.app"
+    target.rmtree if target.exist?
+    target.unlink if target.symlink?
+    ln_sf app_bundle, target
   end
 
   def caveats
