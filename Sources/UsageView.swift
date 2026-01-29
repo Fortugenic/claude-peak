@@ -2,10 +2,14 @@ import SwiftUI
 
 struct UsageView: View {
     @ObservedObject var service: UsageService
+    @ObservedObject var settings: AppSettings
+    @State private var showSettings = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if service.needsLogin {
+            if showSettings {
+                settingsView
+            } else if service.needsLogin {
                 loginView
             } else if let error = service.error {
                 errorView(error)
@@ -24,7 +28,11 @@ struct UsageView: View {
                         .controlSize(.small)
                 }
                 Spacer()
-                if !service.needsLogin {
+                Button(action: { showSettings.toggle() }) {
+                    Image(systemName: showSettings ? "xmark" : "gear")
+                }
+                .buttonStyle(.borderless)
+                if !service.needsLogin && !showSettings {
                     Button("Refresh") {
                         Task { await service.fetchUsage() }
                     }
@@ -42,6 +50,60 @@ struct UsageView: View {
             service.startPolling()
         }
     }
+
+    // MARK: - Settings
+
+    private var settingsView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Settings")
+                .font(.system(.headline, design: .monospaced))
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("MENU BAR DISPLAY")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+                Picker("", selection: $settings.menuBarDisplay) {
+                    ForEach(MenuBarDisplay.allCases, id: \.self) { option in
+                        Text(option.label).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("REFRESH INTERVAL")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+                Picker("", selection: $settings.pollingInterval) {
+                    ForEach(PollingInterval.allCases, id: \.self) { option in
+                        Text(option.label).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .onChange(of: settings.pollingInterval) { _ in
+                    service.restartPolling()
+                }
+            }
+
+            if !service.needsLogin {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("ACCOUNT")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.secondary)
+                    Button("Logout") {
+                        service.logout()
+                        showSettings = false
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.red)
+                }
+            }
+        }
+    }
+
+    // MARK: - Login
 
     private var loginView: some View {
         VStack(spacing: 12) {
@@ -73,6 +135,8 @@ struct UsageView: View {
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
+
+    // MARK: - Usage Content
 
     @ViewBuilder
     private func usageContent(_ usage: UsageResponse) -> some View {

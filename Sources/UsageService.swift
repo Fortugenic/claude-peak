@@ -6,6 +6,7 @@ final class UsageService: ObservableObject {
     @Published var error: String?
     @Published var isLoading = false
     @Published var needsLogin = false
+    @Published var usageDelta: Double = 0 // change per poll
 
     private let clientId = "9d1c250a-e61b-44d9-88ed-5944d1962f5e"
     private let tokenUrl = "https://platform.claude.com/v1/oauth/token"
@@ -22,11 +23,27 @@ final class UsageService: ObservableObject {
     func startPolling() {
         guard pollingTimer == nil else { return }
         Task { await fetchUsage() }
-        pollingTimer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
+        let interval = TimeInterval(AppSettings.shared.pollingInterval.rawValue)
+        pollingTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 await self?.fetchUsage()
             }
         }
+    }
+
+    func restartPolling() {
+        pollingTimer?.invalidate()
+        pollingTimer = nil
+        startPolling()
+    }
+
+    func logout() {
+        TokenStore.clear()
+        cachedAccessToken = nil
+        tokenExpiresAt = nil
+        usage = nil
+        error = nil
+        needsLogin = true
     }
 
     func handleLoginResult(_ result: Result<TokenPair, Error>) {
@@ -64,6 +81,8 @@ final class UsageService: ObservableObject {
         do {
             let token = try await getValidAccessToken()
             let usageData = try await requestUsage(token: token)
+            let previousUtilization = self.usage?.fiveHour.utilization ?? usageData.fiveHour.utilization
+            self.usageDelta = max(0, usageData.fiveHour.utilization - previousUtilization)
             self.usage = usageData
             self.error = nil
             self.needsLogin = false

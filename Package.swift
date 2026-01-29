@@ -3,11 +3,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "ClaudeUsageMonitor",
+    name: "ClaudePeak",
     platforms: [.macOS(.v13)],
     targets: [
         .executableTarget(
-            name: "ClaudeUsageMonitor",
+            name: "ClaudePeak",
             path: "Sources"
         )
     ]

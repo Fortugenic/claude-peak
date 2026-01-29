@@ -1,24 +1,187 @@
 import SwiftUI
+import AppKit
+import Combine
 
 @main
-struct ClaudeUsageMonitorApp: App {
-    @StateObject private var service = UsageService()
+struct ClaudePeakApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var body: some Scene {
-        MenuBarExtra {
-            UsageView(service: service)
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: "gauge.with.needle")
-                Text(menuBarTitle)
-                    .monospacedDigit()
+        Settings { EmptyView() }
+    }
+}
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var statusItem: NSStatusItem!
+    private var popover: NSPopover!
+    private var service: UsageService!
+    private var settings: AppSettings!
+    private var activity: ActivityMonitor!
+    private var animationTimer: Timer?
+    private var displayTimer: Timer?
+    private var frameIndex = 0
+    private var cancellables = Set<AnyCancellable>()
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        service = UsageService()
+        settings = AppSettings.shared
+        activity = ActivityMonitor()
+
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+
+        popover = NSPopover()
+        popover.contentSize = NSSize(width: 280, height: 400)
+        popover.behavior = .transient
+        popover.contentViewController = NSHostingController(
+            rootView: UsageView(service: service, settings: settings)
+                .frame(width: 280)
+        )
+
+        if let button = statusItem.button {
+            button.action = #selector(togglePopover)
+            button.target = self
+        }
+
+        updateMenuBar()
+
+        displayTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.updateMenuBar()
             }
         }
-        .menuBarExtraStyle(.window)
+
+        activity.$tokensPerSecond.sink { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.updateAnimationSpeed()
+            }
+        }.store(in: &cancellables)
+
+        service.startPolling()
+        activity.start()
     }
 
-    private var menuBarTitle: String {
-        guard let usage = service.usage else { return "—" }
-        return "\(usage.fiveHour.percentage)%"
+    @objc private func togglePopover() {
+        guard let button = statusItem.button else { return }
+        if popover.isShown {
+            popover.performClose(nil)
+        } else {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            popover.contentViewController?.view.window?.makeKey()
+        }
+    }
+
+    // MARK: - Flame Rendering
+
+    private func flameCount(for tps: Double) -> Int {
+        if tps > 1000 { return 4 }
+        if tps > 500  { return 3 }
+        if tps > 100  { return 2 }
+        if tps > 0    { return 1 }
+        return 0
+    }
+
+    private func createFlameImage(count: Int, frame: Int) -> NSImage {
+        let size: CGFloat = 18
+        let overlap: CGFloat = 6
+        let totalWidth = count == 0 ? size : size + CGFloat(count - 1) * (size - overlap)
+
+        let image = NSImage(size: NSSize(width: totalWidth, height: size))
+        image.lockFocus()
+
+        for i in 0..<count {
+            // Each flame flickers independently using offset frame
+            let flicker = (frame + i * 2) % 4
+            let symbolName: String
+            let pointSize: CGFloat
+
+            switch flicker {
+            case 0:
+                symbolName = "flame.fill"
+                pointSize = 14
+            case 1:
+                symbolName = "flame.fill"
+                pointSize = 12
+            case 2:
+                symbolName = "flame"
+                pointSize = 13
+            default:
+                symbolName = "flame.fill"
+                pointSize = 15
+            }
+
+            let config = NSImage.SymbolConfiguration(pointSize: pointSize, weight: .regular)
+            if let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
+                .withSymbolConfiguration(config) {
+                let x = CGFloat(i) * (size - overlap)
+                let yOffset = (size - pointSize) / 2
+                symbol.draw(in: NSRect(x: x, y: yOffset, width: pointSize, height: pointSize))
+            }
+        }
+
+        image.unlockFocus()
+        image.isTemplate = true
+        return image
+    }
+
+    // MARK: - Update
+
+    private func updateMenuBar() {
+        guard let button = statusItem.button else { return }
+
+        let tps = activity.tokensPerSecond
+        let count = flameCount(for: tps)
+
+        if count > 0 {
+            button.image = createFlameImage(count: count, frame: frameIndex)
+        } else {
+            // Tiny static ember
+            let config = NSImage.SymbolConfiguration(pointSize: 12, weight: .light)
+            let image = NSImage(systemSymbolName: "flame", accessibilityDescription: "usage")?
+                .withSymbolConfiguration(config)
+            image?.isTemplate = true
+            button.image = image
+        }
+
+        guard let usage = service.usage else {
+            button.title = " —"
+            return
+        }
+
+        switch settings.menuBarDisplay {
+        case .percentOnly:
+            button.title = " \(usage.fiveHour.percentage)%"
+        case .timeOnly:
+            button.title = " \(usage.fiveHour.timeUntilReset)"
+        case .both:
+            button.title = " \(usage.fiveHour.percentage)% · \(usage.fiveHour.timeUntilReset)"
+        }
+    }
+
+    private func updateAnimationSpeed() {
+        animationTimer?.invalidate()
+        animationTimer = nil
+
+        let tps = activity.tokensPerSecond
+
+        let interval: TimeInterval
+        if tps > 1000 {
+            interval = 0.12
+        } else if tps > 500 {
+            interval = 0.2
+        } else if tps > 100 {
+            interval = 0.35
+        } else if tps > 0 {
+            interval = 0.5
+        } else {
+            return // no animation
+        }
+
+        animationTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.frameIndex += 1
+                self?.updateMenuBar()
+            }
+        }
     }
 }

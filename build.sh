@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-APP_NAME="Claude Usage Monitor"
-BUNDLE_ID="com.wecouldbe.claude-usage-monitor"
+APP_NAME="Claude Peak"
+BUNDLE_ID="com.wecouldbe.claude-peak"
 BUILD_DIR=".build/release"
 APP_DIR="${BUILD_DIR}/${APP_NAME}.app"
 INSTALL_DIR="$HOME/Applications"
@@ -15,7 +15,7 @@ rm -rf "${APP_DIR}"
 mkdir -p "${APP_DIR}/Contents/MacOS"
 mkdir -p "${APP_DIR}/Contents/Resources"
 
-cp "${BUILD_DIR}/ClaudeUsageMonitor" "${APP_DIR}/Contents/MacOS/ClaudeUsageMonitor"
+cp "${BUILD_DIR}/ClaudePeak" "${APP_DIR}/Contents/MacOS/ClaudePeak"
 cp Resources/Info.plist "${APP_DIR}/Contents/Info.plist"
 
 echo "Installing to ${INSTALL_DIR}..."

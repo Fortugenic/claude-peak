@@ -8,7 +8,7 @@ struct StoredTokens: Codable {
 
 enum TokenStore {
     private static let tokenDir = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent(".config/claude-usage-monitor")
+        .appendingPathComponent(".config/claude-peak")
     private static let tokenFile = tokenDir.appendingPathComponent("tokens.json")
 
     static func load() throws -> StoredTokens {
