@@ -37,15 +37,30 @@ claude-usage-limit/
 │   ├── Settings.swift         # 앱 설정 (UserDefaults 저장)
 │   ├── ActivityMonitor.swift  # JSONL 로그 감시 → 실시간 토큰 활동량 계산
 │   └── Models.swift           # UsageResponse 등 API 모델
+├── Formula/
+│   └── claude-peak.rb         # Homebrew formula
 ├── Resources/
 │   └── Info.plist             # LSUIElement = true (Dock 숨김)
 └── build.sh                   # .app 번들 빌드 + ~/Applications 설치
 ```
 
-## 빌드 & 실행
+## 설치
+
+### Homebrew (추천)
 
 ```bash
-# 빌드 + 설치 (~/Applications/)
+brew tap letsur-dev/claude-peak https://github.com/letsur-dev/claude-peak.git
+brew install claude-peak
+
+# 실행 (첫 실행 시 ~/Applications에 자동 링크)
+claude-peak
+```
+
+### 소스에서 빌드
+
+```bash
+git clone https://github.com/letsur-dev/claude-peak.git
+cd claude-peak
 ./build.sh
 
 # 실행
