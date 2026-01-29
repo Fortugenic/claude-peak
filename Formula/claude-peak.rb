@@ -19,20 +19,24 @@ class ClaudePeak < Formula
     cp buildpath/".build/release/ClaudePeak", app_bundle/"Contents/MacOS/ClaudePeak"
     cp buildpath/"Resources/Info.plist", app_bundle/"Contents/Info.plist"
 
-    # Link to ~/Applications
-    apps_dir = Pathname.new(Dir.home)/"Applications"
-    apps_dir.mkpath
-    target = apps_dir/"#{app_name}.app"
-    target.rmtree if target.exist?
-    target.unlink if target.symlink?
-    ln_sf app_bundle, target
+    # Create a launcher script in bin/
+    (bin/"claude-peak").write <<~EOS
+      #!/bin/bash
+      APP="#{app_bundle}"
+      LINK="$HOME/Applications/Claude Peak.app"
+      if [ ! -L "$LINK" ]; then
+        mkdir -p "$HOME/Applications"
+        rm -rf "$LINK"
+        ln -sf "$APP" "$LINK"
+      fi
+      open "$APP"
+    EOS
   end
 
   def caveats
     <<~EOS
-      Claude Peak has been installed and linked to ~/Applications/.
-      Run with:
-        open ~/Applications/Claude\\ Peak.app
+      Run `claude-peak` to launch (auto-links to ~/Applications/ on first run).
+      Or directly: open "#{prefix}/Claude Peak.app"
 
       First launch requires OAuth login via browser.
     EOS
