@@ -1,0 +1,163 @@
+import SwiftUI
+
+struct UsageView: View {
+    @ObservedObject var service: UsageService
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if service.needsLogin {
+                loginView
+            } else if let error = service.error {
+                errorView(error)
+            } else if let usage = service.usage {
+                usageContent(usage)
+            } else {
+                ProgressView("Loading...")
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+
+            Divider()
+
+            HStack {
+                if service.isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+                Spacer()
+                if !service.needsLogin {
+                    Button("Refresh") {
+                        Task { await service.fetchUsage() }
+                    }
+                    .buttonStyle(.borderless)
+                }
+                Button("Quit") {
+                    NSApplication.shared.terminate(nil)
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .padding(16)
+        .frame(width: 280)
+        .onAppear {
+            service.startPolling()
+        }
+    }
+
+    private var loginView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "person.crop.circle.badge.questionmark")
+                .font(.largeTitle)
+                .foregroundColor(.secondary)
+
+            Text("Login Required")
+                .font(.system(.headline, design: .monospaced))
+
+            Text("Sign in with your Claude account to view usage.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            Button("Login with Claude") {
+                service.oauthService.startLogin { result in
+                    service.handleLoginResult(result)
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.regular)
+
+            if let error = service.error {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundColor(.red)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
+
+    @ViewBuilder
+    private func usageContent(_ usage: UsageResponse) -> some View {
+        sectionHeader("Current Session")
+        usageBar(
+            label: "5-hour limit",
+            bucket: usage.fiveHour
+        )
+
+        Divider()
+
+        sectionHeader("Weekly Limits")
+        usageBar(
+            label: "All models",
+            bucket: usage.sevenDay
+        )
+        if let sonnet = usage.sevenDaySonnet {
+            usageBar(
+                label: "Sonnet only",
+                bucket: sonnet
+            )
+        }
+
+        Divider()
+
+        sectionHeader("Extra Usage")
+        Text(usage.extraUsage.isEnabled ? "Enabled" : "Disabled")
+            .font(.system(.body, design: .monospaced))
+            .foregroundColor(usage.extraUsage.isEnabled ? .green : .secondary)
+    }
+
+    private func sectionHeader(_ title: String) -> some View {
+        Text(title)
+            .font(.system(.caption, design: .monospaced))
+            .foregroundColor(.secondary)
+            .textCase(.uppercase)
+    }
+
+    private func usageBar(label: String, bucket: UsageBucket) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(label)
+                    .font(.system(.body, design: .monospaced))
+                Spacer()
+                Text("\(bucket.percentage)%")
+                    .font(.system(.body, design: .monospaced))
+                    .bold()
+                    .foregroundColor(colorForPercentage(bucket.percentage))
+            }
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 8)
+
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(colorForPercentage(bucket.percentage))
+                        .frame(width: geo.size.width * min(1, CGFloat(bucket.utilization) / 100), height: 8)
+                }
+            }
+            .frame(height: 8)
+
+            Text("Resets in \(bucket.timeUntilReset)")
+                .font(.system(.caption2, design: .monospaced))
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private func errorView(_ message: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.title2)
+                .foregroundColor(.orange)
+            Text(message)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
+
+    private func colorForPercentage(_ pct: Int) -> Color {
+        if pct >= 80 { return .red }
+        if pct >= 50 { return .orange }
+        return .green
+    }
+}
