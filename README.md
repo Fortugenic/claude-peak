@@ -7,6 +7,10 @@ A macOS menu bar app that monitors Claude Max subscription usage limits in real 
 ## Screenshots
 
 <p align="center">
+  <video src="https://github.com/user-attachments/assets/905f9841-cde4-4211-afa7-08909e36de15" width="400" autoplay loop muted playsinline></video>
+</p>
+
+<p align="center">
   <img src="assets/screenshot.png" alt="Claude Peak screenshot" width="400">
 </p>
 
