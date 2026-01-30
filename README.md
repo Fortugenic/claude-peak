@@ -11,7 +11,8 @@ A macOS menu bar app that monitors Claude Max subscription usage limits in real 
 </p>
 
 <p align="center">
-  <img src="assets/screenshot.png" alt="Claude Peak screenshot" width="400">
+  <img src="assets/screenshot-usage.png" alt="Claude Peak usage" width="300">
+  <img src="assets/screenshot-settings.png" alt="Claude Peak settings" width="300">
 </p>
 
 The menu bar displays the current 5-hour utilization (%) and time until reset. Click to see detailed usage.
@@ -123,6 +124,8 @@ In MADMAX mode, flames scale continuously with tps:
 | 10,000 – 19,999 | × 2 | ↓ |
 | ... | ... | ↓ |
 | 90,000+ | × 10 | 0.08s |
+
+> **Challenge:** Can you hit 10 flames? Enable MADMAX mode and push 90,000+ tps to see "WITNESS ME" — most people never get past "That's it? Pathetic."
 
 ## API
 

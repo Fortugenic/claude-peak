@@ -11,7 +11,8 @@ Claude Max 구독의 usage limit을 실시간으로 모니터링하는 macOS 메
 </p>
 
 <p align="center">
-  <img src="assets/screenshot.png" alt="Claude Peak screenshot" width="400">
+  <img src="assets/screenshot-usage.png" alt="Claude Peak usage" width="300">
+  <img src="assets/screenshot-settings.png" alt="Claude Peak settings" width="300">
 </p>
 
 메뉴바에 현재 5-hour 사용률(%)과 reset 남은 시간이 표시되며, 클릭하면 상세 사용량을 확인할 수 있다.
@@ -123,6 +124,8 @@ MADMAX 모드에서는 tps에 비례하여 불꽃이 늘어난다:
 | 10,000 – 19,999 | 🔥 × 2 | ↓ |
 | ... | ... | ↓ |
 | 90,000+ | 🔥 × 10 | 0.08초 |
+
+> **Challenge:** 불꽃 10개 찍을 수 있어? MADMAX 모드 켜고 90,000+ tps를 밀어봐. "WITNESS ME"를 보는 자, 진정한 토큰 버너 — 대부분은 "That's it? Pathetic." 에서 멈춘다.
 
 ## API
 
