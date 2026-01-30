@@ -186,23 +186,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard tps > 0 else { return nil }
 
         if settings.flameMode == .madmax {
-            // 0.50s at low tps → 0.08s at 100000+
-            let t = min(tps / 100000, 1.0)
-            return 0.50 - t * 0.42
+            // 0.40s at low tps → 0.06s at 50000+
+            let t = min(tps / 50000, 1.0)
+            return 0.40 - t * 0.34
         }
 
         if tps > 60000 {
-            // 3 flames: 0.40s → 0.10s
+            // 3 flames: 0.20s → 0.08s
             let t = min((tps - 60000) / 40000, 1.0)
-            return 0.40 - t * 0.30
+            return 0.20 - t * 0.12
         } else if tps > 30000 {
-            // 2 flames: 0.50s → 0.25s
+            // 2 flames: 0.30s → 0.15s
             let t = (tps - 30000) / 30000
-            return 0.50 - t * 0.25
+            return 0.30 - t * 0.15
         } else {
-            // 1 flame: 0.70s → 0.30s
+            // 1 flame: 0.50s → 0.20s
             let t = min(tps / 30000, 1.0)
-            return 0.70 - t * 0.40
+            return 0.50 - t * 0.30
         }
     }
 

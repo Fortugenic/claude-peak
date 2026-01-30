@@ -111,19 +111,19 @@ In dynamic mode (3), animation speed scales continuously within each flame tier:
 | tps | Flames | Animation Speed |
 |-----|--------|-----------------|
 | 0 | (small ember, static) | None |
-| 0 – 30,000 | × 1 | 0.70s → 0.30s |
-| 30,000 – 60,000 | × 2 | 0.50s → 0.25s |
-| 60,000+ | × 3 | 0.40s → 0.10s |
+| 0 – 30,000 | × 1 | 0.50s → 0.20s |
+| 30,000 – 60,000 | × 2 | 0.30s → 0.15s |
+| 60,000+ | × 3 | 0.20s → 0.08s |
 
 In MADMAX mode, flames scale continuously with tps:
 
 | tps | Flames | Animation Speed |
 |-----|--------|-----------------|
 | 0 | (small ember, static) | None |
-| 1 – 9,999 | × 1 | 0.50s |
+| 1 – 9,999 | × 1 | 0.40s |
 | 10,000 – 19,999 | × 2 | ↓ |
 | ... | ... | ↓ |
-| 90,000+ | × 10 | 0.08s |
+| 90,000+ | × 10 | 0.06s |
 
 > **Challenge:** Can you hit 10 flames? Enable MADMAX mode and push 90,000+ tps to see "WITNESS ME" — most people never get past "That's it? Pathetic."
 

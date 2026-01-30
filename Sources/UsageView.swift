@@ -119,13 +119,6 @@ struct UsageView: View {
                     .toggleStyle(.switch)
                     .controlSize(.mini)
                 }
-                Text("\(String(format: "%.0f", activity.tokensPerSecond)) tps")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.secondary)
-                Text(tpsMessage)
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(tpsMessageColor)
-                    .italic()
             }
 
             if !service.needsLogin {
@@ -210,6 +203,21 @@ struct UsageView: View {
 
     @ViewBuilder
     private func usageContent(_ usage: UsageResponse) -> some View {
+        if settings.flameMode != .off {
+            HStack {
+                Text("\(String(format: "%.0f", activity.tokensPerSecond)) tokens/sec")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+                if !tpsMessage.isEmpty {
+                    Text(tpsMessage)
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(tpsMessageColor)
+                        .italic()
+                }
+            }
+            Divider()
+        }
+
         sectionHeader("Current Session")
         usageBar(
             label: "5-hour limit",
@@ -236,6 +244,15 @@ struct UsageView: View {
         Text(usage.extraUsage.isEnabled ? "Enabled" : "Disabled")
             .font(.system(.body, design: .monospaced))
             .foregroundColor(usage.extraUsage.isEnabled ? .green : .secondary)
+
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            HStack {
+                Spacer()
+                Text("v\(version)")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+        }
     }
 
     private func sectionHeader(_ title: String) -> some View {
