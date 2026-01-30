@@ -22,7 +22,7 @@ When tokens are being consumed, a flame icon animates based on activity level.
 - **Menu bar display**: 5-hour utilization %, time until reset (configurable in settings)
 - **Real-time flame animation**: Monitors `~/.claude/projects/` JSONL logs and animates flames based on token activity
 - **Detailed popover**: 5-hour, 7-day (All models), 7-day (Sonnet) usage + reset timers
-- **Settings**: Menu bar display format (% only / time only / both), refresh interval (1min / 5min / 10min)
+- **Settings**: Menu bar display format (% only / time only / both), refresh interval (1min / 5min / 10min), flame mode (Off / 1 / 3 / MADMAX)
 - **Auto-refresh**: Configurable polling interval (default 5min)
 - **OAuth authentication**: Browser-based PKCE auth with automatic refresh token renewal
 
@@ -98,13 +98,31 @@ On first launch, click "Login with Claude" → sign in with your Claude account 
 
 Scans `~/.claude/projects/**/*.jsonl` files every 2 seconds and calculates token throughput (tokens/sec) over the last 30 seconds.
 
-| Activity | Flame | Animation Speed |
-|----------|-------|-----------------|
-| 0 tps | (small ember, static) | None |
-| > 0 tps | × 1 | 0.5s |
-| > 100 tps | × 2 | 0.35s |
-| > 500 tps | × 3 | 0.2s |
-| > 1000 tps | × 4 | 0.12s |
+Four flame modes available in settings:
+
+- **Off**: No flame icon
+- **1**: Single flame, animates when tokens are active
+- **3** (default): Dynamic 1–3 flames based on tps
+- **MADMAX**: Dynamic 1–10 flames based on tps (10,000 tps per flame)
+
+In dynamic mode (3), animation speed scales continuously within each flame tier:
+
+| tps | Flames | Animation Speed |
+|-----|--------|-----------------|
+| 0 | (small ember, static) | None |
+| 0 – 30,000 | × 1 | 0.70s → 0.30s |
+| 30,000 – 60,000 | × 2 | 0.50s → 0.25s |
+| 60,000+ | × 3 | 0.40s → 0.10s |
+
+In MADMAX mode, flames scale continuously with tps:
+
+| tps | Flames | Animation Speed |
+|-----|--------|-----------------|
+| 0 | (small ember, static) | None |
+| 1 – 9,999 | × 1 | 0.50s |
+| 10,000 – 19,999 | × 2 | ↓ |
+| ... | ... | ↓ |
+| 90,000+ | × 10 | 0.08s |
 
 ## API
 
