@@ -92,13 +92,32 @@ struct UsageView: View {
                 Text("FLAME ICON")
                     .font(.system(.caption, design: .monospaced))
                     .foregroundColor(.secondary)
-                Picker("", selection: $settings.flameMode) {
-                    ForEach(FlameMode.allCases, id: \.self) { mode in
+                Picker("", selection: Binding(
+                    get: {
+                        settings.flameMode == .madmax ? .dynamic : settings.flameMode
+                    },
+                    set: { settings.flameMode = $0 }
+                )) {
+                    ForEach(FlameMode.pickerCases, id: \.self) { mode in
                         Text(mode.label).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+                .disabled(settings.flameMode == .madmax)
+                .opacity(settings.flameMode == .madmax ? 0.4 : 1)
+                HStack {
+                    Toggle(isOn: Binding(
+                        get: { settings.flameMode == .madmax },
+                        set: { settings.flameMode = $0 ? .madmax : .dynamic }
+                    )) {
+                        Text("🔥 MADMAX")
+                            .font(.system(.caption, design: .monospaced))
+                            .bold()
+                    }
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+                }
                 Text("\(String(format: "%.0f", activity.tokensPerSecond)) tps")
                     .font(.system(.caption2, design: .monospaced))
                     .foregroundColor(.secondary)

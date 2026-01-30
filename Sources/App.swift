@@ -88,10 +88,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case .single:
             return tps > 0 ? 1 : 0
         case .dynamic:
-            if tps > 10000 { return 3 }
-            if tps > 5000  { return 2 }
+            if tps > 60000 { return 3 }
+            if tps > 30000 { return 2 }
             if tps > 0     { return 1 }
             return 0
+        case .madmax:
+            if tps <= 0 { return 0 }
+            return min(10, Int(tps / 10000) + 1)
         }
     }
 
@@ -176,6 +179,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    private func animationInterval(for tps: Double) -> TimeInterval? {
+        guard tps > 0 else { return nil }
+
+        if settings.flameMode == .madmax {
+            // 0.50s at low tps → 0.08s at 100000+
+            let t = min(tps / 100000, 1.0)
+            return 0.50 - t * 0.42
+        }
+
+        if tps > 60000 {
+            // 3 flames: 0.40s → 0.10s
+            let t = min((tps - 60000) / 40000, 1.0)
+            return 0.40 - t * 0.30
+        } else if tps > 30000 {
+            // 2 flames: 0.50s → 0.25s
+            let t = (tps - 30000) / 30000
+            return 0.50 - t * 0.25
+        } else {
+            // 1 flame: 0.70s → 0.30s
+            let t = min(tps / 30000, 1.0)
+            return 0.70 - t * 0.40
+        }
+    }
+
     private func updateAnimationSpeed() {
         animationTimer?.invalidate()
         animationTimer = nil
@@ -183,19 +210,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard settings.flameMode != .off else { return }
 
         let tps = activity.tokensPerSecond
-
-        let interval: TimeInterval
-        if tps > 10000 {
-            interval = 0.12
-        } else if tps > 5000 {
-            interval = 0.2
-        } else if tps > 2000 {
-            interval = 0.35
-        } else if tps > 0 {
-            interval = 0.5
-        } else {
-            return // no animation
-        }
+        guard let interval = animationInterval(for: tps) else { return }
 
         animationTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
