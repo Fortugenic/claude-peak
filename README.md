@@ -2,7 +2,7 @@
 
 # Claude Peak
 
-A macOS menu bar app that monitors Claude Max subscription usage limits in real time.
+A macOS menu bar app that monitors Claude Max usage limits — with real-time flame animation that burns hotter as you consume more tokens.
 
 ## Screenshots
 
@@ -18,42 +18,72 @@ A macOS menu bar app that monitors Claude Max subscription usage limits in real 
 The menu bar displays the current 5-hour utilization (%) and time until reset. Click to see detailed usage.
 When tokens are being consumed, a flame icon animates based on activity level.
 
+## Why Claude Peak?
+
+| | |
+|---|---|
+| 🔥 **Live flame animation** | The only app that monitors JSONL token logs in real time — flames burn brighter as tps climbs |
+| 🎮 **MADMAX mode** | Gamified with challenge messages from *"Pathetic"* to *"WITNESS ME"* |
+| 🔐 **One-click OAuth** | No session keys, no DevTools — just login in your browser |
+| ⚡ **Pure Swift** | No Electron, zero dependencies, 8 source files via SPM |
+
+## MADMAX Challenge
+
+Enable MADMAX mode and push your token throughput to the limit. Each flame tier unlocks a new challenge message:
+
+| Flames | tps | Message |
+|--------|-----|---------|
+| 🔥 × 0 | 0 | *Light it up. If you can.* |
+| 🔥 × 1–2 | 1 – 19,999 | *That's it? Pathetic.* |
+| 🔥 × 3–4 | 20,000 – 39,999 | *Warming up...* |
+| 🔥 × 5–6 | 40,000 – 59,999 | *Now we're cooking.* |
+| 🔥 × 7–8 | 60,000 – 79,999 | *FEEL THE BURN* |
+| 🔥 × 9 | 80,000 – 89,999 | *ONE MORE. DO IT.* |
+| 🔥 × 10 | 90,000+ | ***WITNESS ME*** |
+
+> **Can you hit 10 flames?** Most people never get past *"That's it? Pathetic."*
+
+### Flame Modes
+
+Four modes available in settings:
+
+- **Off** — No flame icon
+- **1** — Single flame, animates when tokens are active
+- **3** (default) — Dynamic 1–3 flames based on tps
+- **MADMAX** — Dynamic 1–10 flames (10,000 tps per flame)
+
+<details>
+<summary>Dynamic (3) mode — animation speed table</summary>
+
+| tps | Flames | Animation Speed |
+|-----|--------|-----------------|
+| 0 | (small ember, static) | None |
+| 0 – 30,000 | × 1 | 0.50s → 0.20s |
+| 30,000 – 60,000 | × 2 | 0.30s → 0.15s |
+| 60,000+ | × 3 | 0.20s → 0.08s |
+
+</details>
+
+<details>
+<summary>MADMAX mode — animation speed table</summary>
+
+| tps | Flames | Animation Speed |
+|-----|--------|-----------------|
+| 0 | (small ember, static) | None |
+| 1 – 9,999 | × 1 | 0.40s |
+| 10,000 – 19,999 | × 2 | ↓ |
+| ... | ... | ↓ |
+| 90,000+ | × 10 | 0.06s |
+
+</details>
+
 ## Features
 
-- **Menu bar display**: 5-hour utilization %, time until reset (configurable in settings)
-- **Real-time flame animation**: Monitors `~/.claude/projects/` JSONL logs and animates flames based on token activity
-- **Detailed popover**: 5-hour, 7-day (All models), 7-day (Sonnet) usage + reset timers
-- **Settings**: Menu bar display format (% only / time only / both), refresh interval (1min / 5min / 10min), flame mode (Off / 1 / 3 / MADMAX)
-- **Auto-refresh**: Configurable polling interval (default 5min)
-- **OAuth authentication**: Browser-based PKCE auth with automatic refresh token renewal
-
-## Tech Stack
-
-- Swift + SwiftUI
-- SPM (Swift Package Manager)
-- macOS 13+ (`NSStatusItem` + `NSPopover`)
-- OAuth 2.0 PKCE (local HTTP server for callback)
-
-## Project Structure
-
-```
-claude-usage-limit/
-├── Package.swift
-├── Sources/
-│   ├── App.swift              # @main, NSStatusItem + NSPopover + flame rendering
-│   ├── UsageView.swift        # Popover UI + settings screen
-│   ├── UsageService.swift     # Usage API calls + token management
-│   ├── OAuthService.swift     # OAuth PKCE flow (browser auth)
-│   ├── KeychainHelper.swift   # Token file storage (~/.config/claude-peak/tokens.json)
-│   ├── Settings.swift         # App settings (UserDefaults)
-│   ├── ActivityMonitor.swift  # JSONL log monitoring → real-time token activity
-│   └── Models.swift           # UsageResponse and other API models
-├── Formula/
-│   └── claude-peak.rb         # Homebrew formula
-├── Resources/
-│   └── Info.plist             # LSUIElement = true (hide from Dock)
-└── build.sh                   # Build .app bundle + install to ~/Applications
-```
+- **Real-time flame animation** — Monitors `~/.claude/projects/` JSONL logs, animates flames based on token throughput
+- **Menu bar display** — 5-hour utilization %, time until reset (configurable)
+- **Detailed popover** — 5-hour, 7-day (All models), 7-day (Sonnet) usage + reset timers
+- **Settings** — Display format, refresh interval (1/5/10 min), flame mode
+- **OAuth PKCE** — Browser-based auth with automatic token refresh
 
 ## Installation
 
@@ -78,11 +108,12 @@ cd claude-peak
 open ~/Applications/Claude\ Peak.app
 ```
 
-## Authentication
+## Tech Details
+
+<details>
+<summary>Auth Flow</summary>
 
 On first launch, click "Login with Claude" → sign in with your Claude account in the browser → tokens are saved automatically.
-
-### Auth Flow
 
 1. App starts a local HTTP server (random port, IPv6)
 2. Opens `claude.ai/oauth/authorize` in browser (with PKCE code_challenge)
@@ -90,44 +121,14 @@ On first launch, click "Login with Claude" → sign in with your Claude account 
 4. App exchanges the code for tokens at `platform.claude.com/v1/oauth/token`
 5. Tokens saved to `~/.config/claude-peak/tokens.json` (0600 permissions)
 
-### Token Refresh
-
+**Token Refresh:**
 - Automatically refreshes 5 minutes before access token expiry
 - Prompts re-login on refresh failure
 
-## Flame Animation
+</details>
 
-Scans `~/.claude/projects/**/*.jsonl` files every 2 seconds and calculates token throughput (tokens/sec) over the last 30 seconds.
-
-Four flame modes available in settings:
-
-- **Off**: No flame icon
-- **1**: Single flame, animates when tokens are active
-- **3** (default): Dynamic 1–3 flames based on tps
-- **MADMAX**: Dynamic 1–10 flames based on tps (10,000 tps per flame)
-
-In dynamic mode (3), animation speed scales continuously within each flame tier:
-
-| tps | Flames | Animation Speed |
-|-----|--------|-----------------|
-| 0 | (small ember, static) | None |
-| 0 – 30,000 | × 1 | 0.50s → 0.20s |
-| 30,000 – 60,000 | × 2 | 0.30s → 0.15s |
-| 60,000+ | × 3 | 0.20s → 0.08s |
-
-In MADMAX mode, flames scale continuously with tps:
-
-| tps | Flames | Animation Speed |
-|-----|--------|-----------------|
-| 0 | (small ember, static) | None |
-| 1 – 9,999 | × 1 | 0.40s |
-| 10,000 – 19,999 | × 2 | ↓ |
-| ... | ... | ↓ |
-| 90,000+ | × 10 | 0.06s |
-
-> **Challenge:** Can you hit 10 flames? Enable MADMAX mode and push 90,000+ tps to see "WITNESS ME" — most people never get past "That's it? Pathetic."
-
-## API
+<details>
+<summary>API</summary>
 
 ### Usage Query
 
@@ -167,7 +168,10 @@ Content-Type: application/json
 }
 ```
 
-## Lessons Learned
+</details>
+
+<details>
+<summary>Lessons Learned</summary>
 
 - **Keychain token expiration**: Claude Code re-authenticates via browser OAuth each session, which can invalidate Keychain refresh tokens. A standalone OAuth flow is needed.
 - **`claude setup-token` limitations**: Issues inference-only tokens (`user:inference` scope only), which cannot access the usage API (requires `user:profile`).
@@ -177,3 +181,5 @@ Content-Type: application/json
 - **Utilization values**: The API returns utilization as 0–100 integers (not 0–1 decimals).
 - **Field naming**: The API response uses `resets_at` (with plural 's').
 - **JSONL token logs**: Claude Code creates per-session JSONL files under `~/.claude/projects/`, with token usage recorded in `message.usage` of each line.
+
+</details>
