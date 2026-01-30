@@ -18,13 +18,19 @@ enum FlameMode: String, CaseIterable {
     case off = "off"
     case single = "single"
     case dynamic = "dynamic"
+    case madmax = "madmax"
 
     var label: String {
         switch self {
         case .off: return "Off"
         case .single: return "1"
         case .dynamic: return "3"
+        case .madmax: return "MAX"
         }
+    }
+
+    static var pickerCases: [FlameMode] {
+        [.off, .single, .dynamic]
     }
 }
 
