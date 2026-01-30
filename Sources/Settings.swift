@@ -14,6 +14,20 @@ enum MenuBarDisplay: String, CaseIterable {
     }
 }
 
+enum FlameMode: String, CaseIterable {
+    case off = "off"
+    case single = "single"
+    case dynamic = "dynamic"
+
+    var label: String {
+        switch self {
+        case .off: return "Off"
+        case .single: return "1"
+        case .dynamic: return "3"
+        }
+    }
+}
+
 enum PollingInterval: Int, CaseIterable {
     case one = 60
     case five = 300
@@ -38,8 +52,8 @@ final class AppSettings: ObservableObject {
     @Published var pollingInterval: PollingInterval {
         didSet { UserDefaults.standard.set(pollingInterval.rawValue, forKey: "pollingInterval") }
     }
-    @Published var showFlameIcon: Bool {
-        didSet { UserDefaults.standard.set(showFlameIcon, forKey: "showFlameIcon") }
+    @Published var flameMode: FlameMode {
+        didSet { UserDefaults.standard.set(flameMode.rawValue, forKey: "flameMode") }
     }
 
     private init() {
@@ -57,10 +71,11 @@ final class AppSettings: ObservableObject {
             self.pollingInterval = .five
         }
 
-        if UserDefaults.standard.object(forKey: "showFlameIcon") != nil {
-            self.showFlameIcon = UserDefaults.standard.bool(forKey: "showFlameIcon")
+        if let raw = UserDefaults.standard.string(forKey: "flameMode"),
+           let value = FlameMode(rawValue: raw) {
+            self.flameMode = value
         } else {
-            self.showFlameIcon = true
+            self.flameMode = .dynamic
         }
     }
 }

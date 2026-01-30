@@ -58,7 +58,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }.store(in: &cancellables)
 
-        settings.$showFlameIcon.sink { [weak self] _ in
+        settings.$flameMode.sink { [weak self] _ in
             Task { @MainActor [weak self] in
                 self?.updateMenuBar()
                 self?.updateAnimationSpeed()
@@ -82,11 +82,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Flame Rendering
 
     private func flameCount(for tps: Double) -> Int {
-        if tps > 1000 { return 4 }
-        if tps > 500  { return 3 }
-        if tps > 100  { return 2 }
-        if tps > 0    { return 1 }
-        return 0
+        switch settings.flameMode {
+        case .off:
+            return 0
+        case .single:
+            return tps > 0 ? 1 : 0
+        case .dynamic:
+            if tps > 10000 { return 3 }
+            if tps > 5000  { return 2 }
+            if tps > 0     { return 1 }
+            return 0
+        }
     }
 
     private func createFlameImage(count: Int, frame: Int) -> NSImage {
@@ -137,7 +143,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateMenuBar() {
         guard let button = statusItem.button else { return }
 
-        if settings.showFlameIcon {
+        if settings.flameMode != .off {
             let tps = activity.tokensPerSecond
             let count = flameCount(for: tps)
 
@@ -174,16 +180,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         animationTimer?.invalidate()
         animationTimer = nil
 
-        guard settings.showFlameIcon else { return }
+        guard settings.flameMode != .off else { return }
 
         let tps = activity.tokensPerSecond
 
         let interval: TimeInterval
-        if tps > 1000 {
+        if tps > 10000 {
             interval = 0.12
-        } else if tps > 500 {
+        } else if tps > 5000 {
             interval = 0.2
-        } else if tps > 100 {
+        } else if tps > 2000 {
             interval = 0.35
         } else if tps > 0 {
             interval = 0.5

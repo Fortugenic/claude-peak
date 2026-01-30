@@ -91,9 +91,13 @@ struct UsageView: View {
                 Text("FLAME ICON")
                     .font(.system(.caption, design: .monospaced))
                     .foregroundColor(.secondary)
-                Toggle("Show flame icon", isOn: $settings.showFlameIcon)
-                    .toggleStyle(.switch)
-                    .labelsHidden()
+                Picker("", selection: $settings.flameMode) {
+                    ForEach(FlameMode.allCases, id: \.self) { mode in
+                        Text(mode.label).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
             }
 
             if !service.needsLogin {
